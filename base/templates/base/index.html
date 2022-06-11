@@ -12,14 +12,20 @@
 </head>
 
 <body>
-    <h1>To Do</h1>
-    <p>Manage your tasks</p>
-    <ul>
-    {% for task in tasks %}
-        <li>{{ task }}</li>
-    {% endfor %}
-    </ul>
+    <div id="main">
+        <div id="nav"></div>
+        <div id="content">
+            <h1>To Do</h1>
+            <p>Manage your tasks</p>
+            <ul>
+                {% for task in tasks %}
+                <li><input type="checkbox" id="{{ task.id }}" data-id="{{ task.id }}">{{ task }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </body>
 
 <script src="{% static 'base/js/main.js' %}"></script>
+
 </html>

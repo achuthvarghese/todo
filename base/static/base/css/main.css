@@ -1,1 +1,45 @@
 /* Main stylesheet */
+
+:root {
+    /* Colours */
+    --blue: rgba(30, 143, 255, 0.904);
+    --text: rgb(240, 240, 240);
+}
+
+
+body {
+    background-image: radial-gradient(circle farthest-corner at 22.4% 21.7%, rgba(4, 189, 228, 1) 0%, rgba(2, 83, 185, 1) 100.2%);
+    color: var(--text);
+    height: 100vh;
+}
+
+div#main {
+    width: 80%;
+    margin: 0 auto;
+}
+
+div#nav {
+    min-height: 50px;
+}
+
+div#content {
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+}
+
+div#content h1 {
+    text-align: center;
+}
+
+div#content ul {
+    line-height: 1.5em;
+    margin: 5px 0 15px;
+    padding: 0;
+}
+
+div#content li {
+    list-style: none;
+    position: relative;
+    padding: 0 0 0 20px;
+}
