@@ -10,5 +10,7 @@ function markDone(task_id) {
 
 function showDetails(task_id) {
     $('.task-details').hide('slow')
-    $(`#${task_id} .task-details`).toggle('slow')
+    if ($(`#${task_id} .task-details`)[0].style.display != "block") {
+        $(`#${task_id} .task-details`).toggle('slow')
+    }
 }
