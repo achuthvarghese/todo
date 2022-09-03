@@ -1,6 +1,6 @@
-name: Code format
+name: Python Code Format and Sort Imports
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -17,7 +17,16 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black
+        pip install black isort
     - name: Analysing the code with black
       run: |
         black --diff ./
+    - name: Formatting the code with black
+      run: |
+        black --diff ./
+    - name: Analysing the code with isort
+      run: |
+        isort . --diff --verbose
+    - name: Sorting imports with isort
+      run: |
+        isort .
