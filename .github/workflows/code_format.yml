@@ -21,5 +21,6 @@ jobs:
     - name: Analysing the code with black
       uses: psf/black@stable
     - name: Format the code with black
+      if: failure()
       run: |
         black ./
