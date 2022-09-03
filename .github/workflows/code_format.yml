@@ -19,14 +19,4 @@ jobs:
         python -m pip install --upgrade pip
         pip install black isort
     - name: Analysing the code with black
-      run: |
-        black --diff ./
-    - name: Formatting the code with black
-      run: |
-        black --diff ./
-    - name: Analysing the code with isort
-      run: |
-        isort **/*.py --diff --verbose
-    - name: Sorting imports with isort
-      run: |
-        isort **/*.py
+      uses: psf/black@stable
