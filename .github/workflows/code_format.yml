@@ -26,7 +26,7 @@ jobs:
         black --diff ./
     - name: Analysing the code with isort
       run: |
-        isort . --diff --verbose
+        isort **/*.py --diff --verbose
     - name: Sorting imports with isort
       run: |
-        isort .
+        isort **/*.py
