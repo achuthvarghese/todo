@@ -14,7 +14,9 @@ class Task(models.Model):
     )
     title = models.CharField(max_length=60)
     description = models.TextField(null=True, blank=True)
-    status = models.CharField(max_length=15, choices=STATUS.choices, default=STATUS.PENDING)
+    status = models.CharField(
+        max_length=15, choices=STATUS.choices, default=STATUS.PENDING
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
