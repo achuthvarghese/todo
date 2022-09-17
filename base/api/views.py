@@ -9,6 +9,9 @@ from base.models import Task
 
 @api_view(["GET"])
 def api_root(request, format=None):
+    """
+    Only the root endpoints
+    """
     return Response(
         {
             # 'users': reverse('user-list', request=request, format=format),
