@@ -24,12 +24,20 @@ const taskStatus = {
 };
 
 var apiEndPoints = {};
-var tasks = [];
+var tasks = {};
 
 // Wait for DOM to be ready
 $(document).ready(() => {
     getEndPoints();
 });
+
+function getLocalTask(task_id) {
+    if (task_id in tasks) {
+        return tasks[task_id];
+    } else {
+        return;
+    }
+}
 
 // DOM EventListener functions
 // DOM EventListener:
@@ -39,17 +47,10 @@ function markCancel(task_id) {
 
 // DOM EventListener: Update the task status to done
 function markDone(task_id) {
-    task = undefined;
-    for (let index = 0; index < tasks.length; index++) {
-        task = tasks[index];
-        if (task.id == task_id) {
-            updatedData = task;
-            updatedData.status = taskStatus.done[0];
-            console.log(task, updatedData);
-            break;
-        }
-    }
+    task = getLocalTask(task_id);
     if (task) {
+        updatedData = task;
+        updatedData.status = taskStatus.done[0];
         updateTask(task, updatedData);
     }
 }
@@ -69,10 +70,11 @@ function getEndPoints() {
         url: `${href}${apiRoot}`,
         type: "GET",
         dataType: "json",
-    }).done((data, textStatus) => {
-        if (textStatus == ajaxTextStatus.success) {
-            apiEndPoints = data;
-            getTasks();
+        statusCode: {
+            200: function(data) {
+                apiEndPoints = data;
+                getTasks();
+            }
         }
     });
 }
@@ -83,10 +85,13 @@ function getTasks() {
         url: `${apiEndPoints.tasks}`,
         type: "GET",
         dataType: "json",
-    }).done((data, textStatus) => {
-        if (textStatus == ajaxTextStatus.success) {
-            tasks = data;
-            refreshTasks();
+        statusCode: {
+            200: function(data) {
+                data.forEach(task => {
+                    tasks[task.id] = task;
+                });
+                refreshTasks();
+            }
         }
     });
 }
@@ -97,9 +102,11 @@ function getTask(task) {
         url: task.url,
         type: "GET",
         dataType: "json",
-    }).done((data, textStatus) => {
-        if (textStatus == ajaxTextStatus.success) {
-            refreshTask(data);
+        statusCode: {
+            200: function (data) {
+                tasks[data.id] = data;
+                refreshTask(data);
+            },
         }
     });
 }
@@ -119,9 +126,17 @@ function updateTask(task, updatedData) {
             "X-CSRFToken": csrf_token,
         },
         mode: "same-origin",
-    }).done((data, textStatus) => {
-        if (textStatus == ajaxTextStatus.success) {
-            refreshTask(data);
+        statusCode: {
+            200: function(data) {
+                tasks[task.id] = data;
+                refreshTasks()
+            },
+            400: function(response) {
+                console.log('Task Not Saved:', response.responseText);
+            },
+            404: function() {
+                console.log('Task Not Found');
+            }
         }
     });
 }
@@ -132,15 +147,16 @@ function refreshTasks() {
     taskItems = document.getElementById("task-items");
     if (tasks) {
         taskItemsHtml = "";
-        tasks.forEach((task) => {
+        for ( id in tasks ) {
+            task = tasks[id];
             taskHtml = `
             <div class="task-item" id="${task.id}" data-id="${task.id}">
                 <div class="task-title">
                 ${task.status == taskStatus.done[0]
-                    ? '<span class="done">&#x2714;</span>'
-                    : `<span class="done" onclick="markDone('${task.id}')">&#x2714;</span>`
+                    ? '<span class="done"><i class="bi bi-check-circle-fill"></i></span>'
+                    : `<span class="done" onclick="markDone('${task.id}')"><i class="bi bi-check-circle"></i></span>`
                 }<label onclick="showDetails('${task.id}')" class="${task.status == taskStatus.done[0] ? "linethruogh" : ""}">
-                ${task.title}</label><span class="delete" onclick="markCancel('${task.id}')">&#x2717;</span>
+                ${task.title}</label><span class="delete" onclick="markCancel('${task.id}')"><i class="bi bi-x-circle-fill"></i></span>
                 </div>
                 <div class="task-details">
                     <b>Title: </b>${task.title} <br>
@@ -149,7 +165,7 @@ function refreshTasks() {
                 </div>
             </div>`;
             taskItemsHtml = taskItemsHtml + taskHtml;
-        });
+        };
         taskItems.innerHTML = taskItemsHtml;
     }
 }
@@ -161,9 +177,9 @@ function refreshTask(task) {
         taskItemHtml = `
             <div class="task-item" id="${task.id}" data-id="${task.id}">
                 <div class="task-title">
-                    <span class="done" onclick="markDone('${task.id}')">&#x2714;</span>
+                    <span class="done" onclick="markDone('${task.id}')"><i class="bi bi-check-circle-fill"></i></span>
                     <label onclick="showDetails('${task.id}')" class="${task.status == taskStatus.done[0] ? "linethruogh" : ""}">
-                    ${task.title}</label><span class="delete" onclick="markCancel('${task.id}')">&#x2717;</span>
+                    ${task.title}</label><span class="delete" onclick="markCancel('${task.id}')"><i class="bi bi-x-circle-fill"></i></span>
                 </div>
                 <div class="task-details">
                     <b>Title: </b>${task.title} <br>
