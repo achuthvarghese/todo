@@ -10,6 +10,9 @@
 
     <link rel="stylesheet" href="{% static 'base/css/main.css' %}">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+
     <script src="{% static 'base/js/jquery-3.6.0.min.js' %}"></script>
 </head>
 
@@ -19,26 +22,42 @@
         <div id="content">
             <h1>To Do</h1>
             <p>Manage your tasks</p>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTaskModal">New</button>
             <div id="task-items">
-                {% for task in tasks %}
-                <div class="task-item" id="{{ task.id }}" data-id="{{ task.id }}">
-                    <div class="task-title">
-                        <span class="done" onclick="markDone('{{ task.id }}')">&#x2714;</span><label 
-                        onclick="showDetails('{{ task.id }}')" class="{% if task.status == 'done' %} linethruogh {% endif %}">
-                        {{ task.title|title }}</label><span class="delete" onclick="markCancel('{{ task.id }}')">&#x2717;</span>
-                    </div>
-                    <div class="task-details">
-                        <b>Title: </b>{{ task.title|title }} <br>
-                        <b>Status: </b>{{ task.get_status_display }} <br>
-                        <b>Description: </b>{{ task.description|default:"N/A" }} </br>
-                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newTaskModalLabel">Add task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                {% endfor %}
+                <div class="modal-body">
+                    <form id="newTaskForm">
+                      <div class="mb-3">
+                        <label for="task-title" class="col-form-label">Title:</label>
+                        <input type="text" class="form-control" id="task-title" name="task-title">
+                      </div>
+                      <div class="mb-3">
+                        <label for="task-description" class="col-form-label">Description:</label>
+                        <textarea class="form-control" id="task-description" name="task-description"></textarea>
+                      </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="newTask()">Create</button>
+                </div>
             </div>
         </div>
     </div>
 </body>
 
-<script src="{% static 'base/js/main.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">var csrf_token = "{{ csrf_token }}";</script>
+<script type="text/javascript" src="{% static 'base/js/main.js' %}"></script>
 
 </html>

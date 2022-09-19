@@ -3,7 +3,7 @@ from rest_framework import serializers
 from base.models import Task
 
 
-class TaskSerializer(serializers.HyperlinkedModelSerializer):
+class TaskSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="base:task-detail")
 
     class Meta:
