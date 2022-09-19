@@ -39,10 +39,12 @@ function getLocalTask(task_id) {
     }
 }
 
-// DOM EventListener functions
-// DOM EventListener:
+// DOM EventListener: Delete task
 function markCancel(task_id) {
-    console.log(`Cancel ${task_id}`);
+    task = getLocalTask(task_id)
+    if (task) {
+        deleteTask(task);
+    }
 }
 
 // DOM EventListener: Update the task status to done
@@ -133,6 +135,28 @@ function updateTask(task, updatedData) {
             },
             400: function(response) {
                 console.log('Task Not Saved:', response.responseText);
+            },
+            404: function() {
+                console.log('Task Not Found');
+            }
+        }
+    });
+}
+
+// API call: Delete task
+function deleteTask(task) {
+    $.ajax({
+        url: task.url,
+        type: "DELETE",
+        dataType: "json",
+        headers: {
+            "X-CSRFToken": csrf_token,
+        },
+        mode: "same-origin",
+        statusCode: {
+            204: function() {
+                delete tasks[task.id];
+                refreshTasks()
             },
             404: function() {
                 console.log('Task Not Found');
