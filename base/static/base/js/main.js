@@ -39,9 +39,20 @@ function getLocalTask(task_id) {
     }
 }
 
+// DOM EventListener functions
+// DOM EventListener: Create a new task
+function newTask() {
+    task = {
+        title: document.querySelector("#newTaskForm [name='task-title']").value,
+        description: document.querySelector("#newTaskForm [name='task-description']").value,
+    };
+    console.log(task);
+    createTask(task);
+}
+
 // DOM EventListener: Delete task
 function markCancel(task_id) {
-    task = getLocalTask(task_id)
+    task = getLocalTask(task_id);
     if (task) {
         deleteTask(task);
     }
@@ -73,11 +84,11 @@ function getEndPoints() {
         type: "GET",
         dataType: "json",
         statusCode: {
-            200: function(data) {
+            200: function (data) {
                 apiEndPoints = data;
                 getTasks();
-            }
-        }
+            },
+        },
     });
 }
 
@@ -88,13 +99,44 @@ function getTasks() {
         type: "GET",
         dataType: "json",
         statusCode: {
-            200: function(data) {
-                data.forEach(task => {
+            200: function (data) {
+                data.forEach((task) => {
                     tasks[task.id] = task;
                 });
                 refreshTasks();
-            }
-        }
+            },
+        },
+    });
+}
+
+// API call: Create a new task
+function createTask(task) {
+    $.ajax({
+        url: `${apiEndPoints.tasks}`,
+        type: "POST",
+        dataType: "json",
+        data: {
+            title: task.title,
+            description: task.description,
+        },
+        headers: {
+            "X-CSRFToken": csrf_token,
+        },
+        mode: "same-origin",
+        statusCode: {
+            201: function (data) {
+                tasks[data.id] = data;
+                refreshTasks();
+            },
+            400: function (response) {
+                console.log("Task Not Saved:", response.responseText);
+            },
+        },
+    })
+    .always( () => {
+        $('#newTaskModal').modal('hide');
+        document.querySelector("#newTaskForm [name='task-title']").value = "";
+        document.querySelector("#newTaskForm [name='task-description']").value = "";
     });
 }
 
@@ -109,7 +151,7 @@ function getTask(task) {
                 tasks[data.id] = data;
                 refreshTask(data);
             },
-        }
+        },
     });
 }
 
@@ -129,17 +171,17 @@ function updateTask(task, updatedData) {
         },
         mode: "same-origin",
         statusCode: {
-            200: function(data) {
+            200: function (data) {
                 tasks[task.id] = data;
-                refreshTasks()
+                refreshTasks();
             },
-            400: function(response) {
-                console.log('Task Not Saved:', response.responseText);
+            400: function (response) {
+                console.log("Task Not Saved:", response.responseText);
             },
-            404: function() {
-                console.log('Task Not Found');
-            }
-        }
+            404: function () {
+                console.log("Task Not Found");
+            },
+        },
     });
 }
 
@@ -154,14 +196,14 @@ function deleteTask(task) {
         },
         mode: "same-origin",
         statusCode: {
-            204: function() {
+            204: function () {
                 delete tasks[task.id];
-                refreshTasks()
+                refreshTasks();
             },
-            404: function() {
-                console.log('Task Not Found');
-            }
-        }
+            404: function () {
+                console.log("Task Not Found");
+            },
+        },
     });
 }
 
@@ -171,7 +213,7 @@ function refreshTasks() {
     taskItems = document.getElementById("task-items");
     if (tasks) {
         taskItemsHtml = "";
-        for ( id in tasks ) {
+        for (id in tasks) {
             task = tasks[id];
             taskHtml = `
             <div class="task-item" id="${task.id}" data-id="${task.id}">
@@ -189,7 +231,7 @@ function refreshTasks() {
                 </div>
             </div>`;
             taskItemsHtml = taskItemsHtml + taskHtml;
-        };
+        }
         taskItems.innerHTML = taskItemsHtml;
     }
 }

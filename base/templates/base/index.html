@@ -22,7 +22,35 @@
         <div id="content">
             <h1>To Do</h1>
             <p>Manage your tasks</p>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTaskModal">New</button>
             <div id="task-items">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newTaskModalLabel">Add task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newTaskForm">
+                      <div class="mb-3">
+                        <label for="task-title" class="col-form-label">Title:</label>
+                        <input type="text" class="form-control" id="task-title" name="task-title">
+                      </div>
+                      <div class="mb-3">
+                        <label for="task-description" class="col-form-label">Description:</label>
+                        <textarea class="form-control" id="task-description" name="task-description"></textarea>
+                      </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="newTask()">Create</button>
+                </div>
             </div>
         </div>
     </div>
