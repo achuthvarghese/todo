@@ -9,9 +9,13 @@
 
 body {
     /* background-image: radial-gradient(circle farthest-corner at 22.4% 21.7%, rgba(4, 189, 228, 1) 0%, rgba(2, 83, 185, 1) 100.2%); */
-    background-color: rgba(236, 236, 236, 0.856);
+    /* background-color: rgba(236, 236, 236, 0.856); */
     color: var(--text);
-    height: 100vh;
+    /* height: 100vh; */
+    background-image: url("/static/base/images/bg.jpeg");
+    background-size: 160px 160px;
+    background-color: #1d0000 !important;
+    background-blend-mode: difference;
 }
 
 div#main {
@@ -21,12 +25,15 @@ div#main {
 
 div#nav {
     min-height: 50px;
+    text-align: center;
 }
 
 div#content {
+    border: 1px solid #ffffff50;
     border-radius: 10px;
     padding: 15px;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px -20px 60px -12px, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+    backdrop-filter: blur(.7px);
 }
 
 div#content h1 {
