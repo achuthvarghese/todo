@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Statistics — todo.</title>
+    <meta name="description" content="todo. is a bold, simple task manager: list your tasks, move them across a board and see your progress in clear statistics.">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <meta name="theme-color" content="#FFD23F">
+    <meta property="og:site_name" content="todo.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Statistics — todo.">
+    <meta property="og:description" content="todo. is a bold, simple task manager: list your tasks, move them across a board and see your progress in clear statistics.">
+    <meta property="og:url" content="https://achuthvarghese.github.io/todo/stats/">
+    <meta name="twitter:card" content="summary">
+    <link rel="icon" href="/todo/static/base/img/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
+    <link rel="stylesheet" href="/todo/static/base/css/app.css">
+    
+</head>
+<body class="">
+    <a class="skip-link" href="#main">Skip to content</a>
+    
+<header class="site-header">
+    <div class="site-header__inner">
+        <a class="brand" href="/todo/" aria-label="todo. home">
+    <span class="brand__mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.5" fill="none" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span aria-hidden="true">todo.</span>
+</a>
+
+        <nav class="main-nav" aria-label="Main">
+            <a class="toggle" href="/todo/tasks/">List</a>
+            <a class="toggle" href="/todo/board/">Board</a>
+            <a class="toggle" href="/todo/stats/" aria-current="page">Stats</a>
+        </nav>
+        
+        <details class="account">
+            <summary aria-label="Demo menu">
+                <span class="account__name">Demo</span>
+                <span class="avatar" aria-hidden="true">D</span>
+            </summary>
+            <div class="account__menu">
+                <p><strong>Demo mode.</strong> Your tasks are saved in this browser only.</p>
+                <button type="button" class="btn btn--block" id="reset-demo">Reset sample data</button>
+                <a class="btn btn--block" href="/todo/">About todo.</a>
+            </div>
+        </details>
+        
+    </div>
+</header>
+
+<main id="main" class="page" data-mode="static"
+      data-api-tasks="/todo/api/tasks/" data-api-stats="/todo/api/stats/">
+    
+<div class="page-head">
+    <h1 class="page-title">Statistics</h1>
+    <p class="mono" id="stats-meta">Loading…</p>
+</div>
+
+<div class="bento" id="bento" aria-busy="true">
+    <section class="panel kpi"><h2>Completion rate</h2><p class="kpi__value"><span data-kpi="completion_rate">–</span><span class="kpi__unit">%</span></p><p class="kpi__note" data-kpi-note="completion_rate"></p></section>
+    <section class="panel kpi"><h2>Open tasks</h2><p class="kpi__value" data-kpi="open">–</p><p class="kpi__note" data-kpi-note="open"></p></section>
+    <section class="panel kpi"><h2>Done this week</h2><p class="kpi__value" data-kpi="done_this_week">–</p><p class="kpi__note" data-kpi-note="done_this_week"></p></section>
+    <section class="panel kpi"><h2>Avg. time to done</h2><p class="kpi__value"><span data-kpi="avg_days_to_done">–</span><span class="kpi__unit" data-kpi-unit="avg_days_to_done"></span></p><p class="kpi__note">From created to done</p></section>
+
+    <section class="panel span-8" aria-labelledby="weekly-h">
+        <div class="panel__head">
+            <div><h2 id="weekly-h">Tasks completed per week</h2><p class="panel__sub">Last 8 weeks</p></div>
+            <button type="button" class="toggle" id="weekly-table-toggle" aria-pressed="false" aria-controls="weekly-chart weekly-table">Show table</button>
+        </div>
+        <p class="tip" id="weekly-tip" aria-live="polite">Hover or focus a bar for details</p>
+        <div class="vchart" id="weekly-chart"></div>
+        <table class="data-table" id="weekly-table" hidden>
+            <caption class="visually-hidden">Tasks completed per week</caption>
+            <thead><tr><th scope="col">Week starting</th><th scope="col">Completed</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section class="panel span-4" aria-labelledby="status-h">
+        <div><h2 id="status-h">By status</h2><p class="panel__sub" id="status-total"></p></div>
+        <div class="stack" id="status-stack" role="img"></div>
+        <ul class="legend" id="status-legend"></ul>
+        <p class="note" id="status-note"></p>
+    </section>
+
+    <section class="panel span-7" aria-labelledby="heat-h">
+        <div><h2 id="heat-h">Activity</h2><p class="panel__sub">Tasks completed per day, last 12 weeks</p></div>
+        <p class="tip" id="heat-tip" aria-live="polite">Hover or focus a day for details</p>
+        <div class="heatmap">
+            <div class="heatmap__days" aria-hidden="true"><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span>Sun</span></div>
+            <div class="heatmap__grid" id="heatmap" role="img"></div>
+        </div>
+        <div class="scale" aria-hidden="true"><span>Less</span><span class="heatmap__cell"></span><span class="heatmap__cell" data-level="1"></span><span class="heatmap__cell" data-level="2"></span><span class="heatmap__cell" data-level="3"></span><span class="heatmap__cell" data-level="4"></span><span>More</span></div>
+    </section>
+
+    <section class="panel span-5" aria-labelledby="dow-h">
+        <div><h2 id="dow-h">Busiest days</h2><p class="panel__sub">Tasks completed by weekday, all time</p></div>
+        <ul class="hbars" id="weekdays"></ul>
+    </section>
+
+    <section class="panel panel--blue span-half" aria-labelledby="age-h">
+        <div><h2 id="age-h">How old are open tasks?</h2><p class="panel__sub" id="age-sub"></p></div>
+        <div class="vchart vchart--short vchart--blue" id="ages-chart"></div>
+    </section>
+
+    <section class="panel span-half" aria-labelledby="oldest-h">
+        <div class="panel__head"><h2 id="oldest-h">Oldest open tasks</h2><a href="/todo/tasks/"><strong>See all</strong></a></div>
+        <ol class="oldest" id="oldest"></ol>
+        <p class="panel__sub" id="oldest-empty" hidden>No open tasks. Nice.</p>
+    </section>
+</div>
+
+    <noscript><p class="empty"><strong>JavaScript is needed</strong>Turn on JavaScript to manage your tasks.</p></noscript>
+</main>
+
+<nav class="bottom-nav" aria-label="Main">
+    <a href="/todo/tasks/">
+        <svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M3 8h10M3 12h10" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round"/></svg>List</a>
+    <a href="/todo/board/">
+        <svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="3.2" height="10" rx="1" fill="none" stroke="#0A0A0A" stroke-width="1.8"/><rect x="6.4" y="3" width="3.2" height="7" rx="1" fill="none" stroke="#0A0A0A" stroke-width="1.8"/><rect x="10.8" y="3" width="3.2" height="5" rx="1" fill="none" stroke="#0A0A0A" stroke-width="1.8"/></svg>Board</a>
+    <a href="/todo/stats/" aria-current="page">
+        <svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13V8M8 13V3M13 13V6" stroke="#0A0A0A" stroke-width="2.2" stroke-linecap="round"/></svg>Stats</a>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+    <span class="toast__text"></span>
+    <button type="button" class="btn" hidden></button>
+</div>
+
+    <script type="module" src="/todo/static/base/js/stats.js"></script>
+</body>
+</html>

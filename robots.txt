@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /todo/tasks/
+Disallow: /todo/board/
+Disallow: /todo/stats/
+Allow: /
+
+Sitemap: https://achuthvarghese.github.io/todo/sitemap.xml
