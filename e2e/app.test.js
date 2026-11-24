@@ -5,7 +5,9 @@ import { after, before, describe, test } from "node:test";
 
 import { chromium } from "playwright";
 
-const BASE = (process.env.BASE_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+const BASE = (process.env.BASE_URL || "").replace(/\/$/, "");
+// Needs the Django app running; skipped when only the static site is tested.
+const SKIP = !BASE && "BASE_URL not set";
 const PASSWORD = "a-Strong-pass-123";
 const WIDTHS = [320, 375, 768, 1024, 1440, 1920];
 
@@ -13,7 +15,7 @@ let browser;
 let counter = 0;
 
 before(async () => {
-    browser = await chromium.launch();
+    if (!SKIP) browser = await chromium.launch();
 });
 
 after(async () => {
@@ -53,7 +55,7 @@ async function overflow(page) {
     return page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 }
 
-describe("public pages", () => {
+describe("public pages", { skip: SKIP }, () => {
     test("landing page has search metadata", async () => {
         const page = await browser.newPage();
         await page.goto(`${BASE}/`);
@@ -104,7 +106,7 @@ describe("public pages", () => {
     });
 });
 
-describe("task list", () => {
+describe("task list", { skip: SKIP }, () => {
     test("add, complete, cycle status, edit, filter", async () => {
         const { context, page, errors } = await signedInPage();
         await addTask(page, "Buy milk");
@@ -189,7 +191,7 @@ describe("task list", () => {
     });
 });
 
-describe("board", () => {
+describe("board", { skip: SKIP }, () => {
     test("move with buttons, drag and drop, and add to a column", async () => {
         const { context, page, errors } = await signedInPage();
         await addTask(page, "Board card");
@@ -215,7 +217,7 @@ describe("board", () => {
     });
 });
 
-describe("statistics", () => {
+describe("statistics", { skip: SKIP }, () => {
     test("numbers match the user's tasks", async () => {
         const { context, page, errors } = await signedInPage();
         for (const title of ["One", "Two", "Three"]) await addTask(page, title);
@@ -239,7 +241,7 @@ describe("statistics", () => {
     });
 });
 
-describe("responsive layout", () => {
+describe("responsive layout", { skip: SKIP }, () => {
     test("no sideways scrolling from 320px phones to 1920px screens", async () => {
         const { context, page } = await signedInPage();
         await addTask(page, "A task with a fairly long title to test wrapping");

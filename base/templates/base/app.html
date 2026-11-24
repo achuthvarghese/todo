@@ -1,6 +1,6 @@
 {% extends "base/base.html" %}
 {% load static %}
-{% block extra_head %}<meta name="csrf-token" content="{{ csrf_token }}">{% endblock %}
+{% block extra_head %}{% if not static_demo %}<meta name="csrf-token" content="{{ csrf_token }}">{% endif %}{% endblock %}
 {% block body %}
 <header class="site-header">
     <div class="site-header__inner">
@@ -10,6 +10,19 @@
             <a class="toggle" href="{% url 'base:board' %}"{% if section == "board" %} aria-current="page"{% endif %}>Board</a>
             <a class="toggle" href="{% url 'base:stats' %}"{% if section == "stats" %} aria-current="page"{% endif %}>Stats</a>
         </nav>
+        {% if static_demo %}
+        <details class="account">
+            <summary aria-label="Demo menu">
+                <span class="account__name">Demo</span>
+                <span class="avatar" aria-hidden="true">D</span>
+            </summary>
+            <div class="account__menu">
+                <p><strong>Demo mode.</strong> Your tasks are saved in this browser only.</p>
+                <button type="button" class="btn btn--block" id="reset-demo">Reset sample data</button>
+                <a class="btn btn--block" href="{% url 'base:home' %}">About todo.</a>
+            </div>
+        </details>
+        {% else %}
         <details class="account">
             <summary aria-label="Account menu for {{ user.get_username }}">
                 <span class="account__name">{{ user.get_username }}</span>
@@ -23,10 +36,11 @@
                 </form>
             </div>
         </details>
+        {% endif %}
     </div>
 </header>
 
-<main id="main" class="page{% block page_class %}{% endblock %}"
+<main id="main" class="page{% block page_class %}{% endblock %}"{% if static_demo %} data-mode="static"{% endif %}
       data-api-tasks="{% url 'base:task-list' %}" data-api-stats="{% url 'base:api-stats' %}">
     {% block content %}{% endblock %}
     <noscript><p class="empty"><strong>JavaScript is needed</strong>Turn on JavaScript to manage your tasks.</p></noscript>

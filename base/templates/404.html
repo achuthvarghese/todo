@@ -1,0 +1,6 @@
+{% extends "base/_auth_layout.html" %}
+{% block hero_heading %}<h1 class="hero__title" id="hero-title">Not<br><span class="highlight">found.</span></h1>{% endblock %}
+{% block hero_extra %}
+<p class="hero__lead">That page doesn’t exist. It may have moved, or the link may be wrong.</p>
+<div class="hero__actions"><a class="btn btn--primary btn--lg" href="{% url 'base:home' %}">Go to the home page</a></div>
+{% endblock %}

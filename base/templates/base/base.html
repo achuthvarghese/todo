@@ -6,13 +6,13 @@
     <title>{{ page_title|default:"todo." }}</title>
     <meta name="description" content="{{ page_description|default:default_description }}">
     <meta name="robots" content="{% if noindex %}noindex, nofollow{% else %}index, follow{% endif %}">
-    {% if not noindex %}<link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">{% endif %}
+    {% if not noindex %}<link rel="canonical" href="{{ page_url }}">{% endif %}
     <meta name="theme-color" content="#FFD23F">
     <meta property="og:site_name" content="todo.">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ page_title|default:'todo.' }}">
     <meta property="og:description" content="{{ page_description|default:default_description }}">
-    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    <meta property="og:url" content="{{ page_url }}">
     <meta name="twitter:card" content="summary">
     <link rel="icon" href="{% static 'base/img/favicon.svg' %}" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">

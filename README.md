@@ -120,6 +120,32 @@ Public pages have a title, description, canonical URL and Open Graph tags.
 `/robots.txt` keeps `/api/`, `/admin/` and the app pages out of search
 results and points to `/sitemap.xml`, which lists the public pages.
 
+## Live demo on GitHub Pages
+
+GitHub Pages only serves static files, so it can't run Django. Instead, the
+**GitHub Pages** workflow (`.github/workflows/pages.yml`) builds a static,
+browser-only demo from the same templates, CSS and JavaScript:
+
+- The landing page, List, Board and Statistics pages work as in the real
+  app, but there are no accounts. Tasks are saved in the visitor's browser
+  (`localStorage`) and start with sample data; **Reset sample data** in the
+  menu restores it.
+- Every pull request builds the site and tests it in a browser. Each push to
+  `master` also publishes it to the `gh-pages` branch.
+
+**One-time setup:** in the repository's *Settings › Pages › Build and
+deployment*, set *Source* to **Deploy from a branch** and pick **gh-pages** /
+**(root)**. The site is then at `https://<owner>.github.io/<repo>/`. For a
+custom domain, set the repository variables `PAGES_BASE_PATH` (for example
+`/`) and `PAGES_ORIGIN` (for example `https://todo.example.com`).
+
+To build and preview it locally:
+
+```bash
+DJANGO_DEBUG=1 python manage.py build_static_site --output _site/todo --base-path /todo/
+python -m http.server 8080 --directory _site   # open http://127.0.0.1:8080/todo/
+```
+
 ## Development
 
 ```bash
@@ -139,6 +165,8 @@ cd e2e
 npm ci
 npx playwright install chromium
 BASE_URL=http://127.0.0.1:8000 npm test
+# For the static GitHub Pages build (served as above):
+STATIC_BASE_URL=http://127.0.0.1:8080/todo/ npm test
 ```
 
 GitHub Actions runs black, isort, the Python tests, a missing-migrations
