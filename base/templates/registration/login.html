@@ -4,6 +4,7 @@
 <form class="auth-card" method="post" action="{% url 'login' %}" novalidate>
     {% csrf_token %}
     <h1>Welcome back</h1>
+    {% if demo_login %}<p class="note" role="note"><strong>Development demo:</strong> sign in as <code>{{ demo_login.username }}</code> with password <code>{{ demo_login.password }}</code>.</p>{% endif %}
     {% if form.non_field_errors %}<div class="alert" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
     {% include "base/_field.html" with field=form.username autocomplete="username" autofocus=True %}
     {% include "base/_field.html" with field=form.password type="password" autocomplete="current-password" %}

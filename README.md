@@ -36,6 +36,27 @@ python manage.py runserver
 Open http://127.0.0.1:8000/ and choose **Sign up** to create an account. The
 admin site is at http://127.0.0.1:8000/admin/.
 
+### Demo data (development only)
+
+To try the app with realistic data, load a demo user with about 60 tasks
+spread over the last 12 weeks:
+
+```bash
+DJANGO_DEBUG=1 python manage.py seed_demo
+```
+
+Then sign in with:
+
+| Username | Password |
+|---|---|
+| `demo` | `demo-pass-123` |
+
+Running it again resets the demo user's tasks and password. Options:
+`--tasks N` (how many tasks) and `--seed N` (different random data). The
+command refuses to run unless `DJANGO_DEBUG` is on, and the sign-in page only
+shows these details in development, so they never apply in production. The
+demo user is a regular account, not an admin.
+
 > **Upgrading an existing checkout:** migrations used to be git-ignored, so an
 > old `db.sqlite3` may not match the committed migration (tasks now belong to
 > a user). Delete `db.sqlite3` and run `python manage.py migrate` again.
