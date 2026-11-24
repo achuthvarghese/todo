@@ -1,0 +1,14 @@
+{% extends "base/_auth_layout.html" %}
+{% block top_links %}<a class="btn" href="{% url 'login' %}">Sign in</a>{% endblock %}
+{% block card %}
+<form class="auth-card" method="post" action="{% url 'signup' %}" novalidate>
+    {% csrf_token %}
+    <h1>Create your account</h1>
+    {% if form.non_field_errors %}<div class="alert" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+    {% include "base/_field.html" with field=form.username autocomplete="username" autofocus=True %}
+    {% include "base/_field.html" with field=form.password1 type="password" autocomplete="new-password" %}
+    {% include "base/_field.html" with field=form.password2 type="password" autocomplete="new-password" %}
+    <button type="submit" class="btn btn--primary btn--lg btn--block">Create account</button>
+    <p class="auth-card__foot">Already have an account? <a href="{% url 'login' %}"><strong>Sign in</strong></a></p>
+</form>
+{% endblock %}

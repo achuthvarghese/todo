@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sitemaps",
     "base.apps.BaseConfig",
     "rest_framework",
 ]
@@ -91,6 +92,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "base.context_processors.seo",
             ],
         },
     },
@@ -156,7 +158,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Authentication
 
 LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "base:index"
+LOGIN_REDIRECT_URL = "base:home"
 LOGOUT_REDIRECT_URL = "login"
 
 

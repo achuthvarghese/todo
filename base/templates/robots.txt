@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /tasks/
+Disallow: /board/
+Disallow: /stats/
+Allow: /
+
+Sitemap: {{ request.scheme }}://{{ request.get_host }}{% url 'sitemap' %}
