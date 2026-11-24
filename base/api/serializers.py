@@ -16,8 +16,9 @@ class TaskSerializer(serializers.ModelSerializer):
             "status",
             "created_at",
             "updated_at",
+            "completed_at",
         )
-        read_only_fields = ("id", "created_at", "updated_at")
+        read_only_fields = ("id", "created_at", "updated_at", "completed_at")
 
     def validate_title(self, value):
         value = value.strip()

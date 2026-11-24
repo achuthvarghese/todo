@@ -1,0 +1,34 @@
+{% extends "base/base.html" %}
+{% block body %}
+<div class="auth">
+    <header class="auth__top">
+        {% include "base/_brand.html" %}
+        <nav aria-label="Account">
+            {% block top_links %}{% endblock %}
+        </nav>
+    </header>
+    <main id="main" class="auth__body">
+        <section class="hero" aria-labelledby="hero-title">
+            {% block hero_heading %}<p class="hero__title" id="hero-title">Plan it.<br><span class="highlight">Do it.</span></p>{% endblock %}
+            <p class="hero__lead">A loud little task manager. List it, move it across the board, and see where your time goes.</p>
+            <ul class="hero__chips" aria-label="Task statuses" style="list-style:none;margin:0;padding:0">
+                <li class="chip chip--pending">To do</li>
+                <li class="chip chip--in_progress">Doing</li>
+                <li class="chip chip--done">Done</li>
+            </ul>
+            {% block hero_extra %}{% endblock %}
+        </section>
+        {% block card %}{% endblock %}
+    </main>
+    {% block after_main %}{% endblock %}
+    <footer class="site-footer">
+        <div class="site-footer__inner">
+            <span>todo. — a simple task manager</span>
+            <nav aria-label="Footer" style="display:flex;gap:16px;flex-wrap:wrap">
+                <a href="{% url 'login' %}">Sign in</a>
+                <a href="{% url 'signup' %}">Create an account</a>
+            </nav>
+        </div>
+    </footer>
+</div>
+{% endblock %}

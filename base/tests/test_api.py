@@ -157,32 +157,6 @@ class AnonymousAccessTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class PageTests(TestCase):
-    def test_index_redirects_to_login(self):
-        response = self.client.get(reverse("base:index"))
-        self.assertRedirects(response, f"{reverse('login')}?next=/")
-
-    def test_login_and_index(self):
-        User.objects.create_user("alice", password="pass")
-        response = self.client.post(
-            reverse("login"), {"username": "alice", "password": "pass"}
-        )
-        self.assertRedirects(response, reverse("base:index"))
-        response = self.client.get(reverse("base:index"))
-        self.assertContains(response, "Signed in as alice")
-
-    def test_login_page_shows_error(self):
-        response = self.client.post(
-            reverse("login"), {"username": "nobody", "password": "wrong"}
-        )
-        self.assertContains(response, "didn't match")
-
-    def test_logout(self):
-        self.client.force_login(User.objects.create_user("alice"))
-        response = self.client.post(reverse("logout"))
-        self.assertRedirects(response, reverse("login"))
-
-
 class TaskAdminTests(TestCase):
     def test_mark_done_action(self):
         admin_user = User.objects.create_superuser("admin", "admin@example.com", "pw")

@@ -1,0 +1,36 @@
+{% extends "base/_auth_layout.html" %}
+{% block extra_head %}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"todo.","applicationCategory":"ProductivityApplication","operatingSystem":"Any","description":"A bold, simple task manager with a list, a board and statistics.","url":"{{ request.scheme }}://{{ request.get_host }}/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+{% endblock %}
+{% block top_links %}<a class="btn" href="{% url 'login' %}">Sign in</a><a class="btn btn--primary" href="{% url 'signup' %}">Sign up</a>{% endblock %}
+{% block hero_heading %}<h1 class="hero__title" id="hero-title">Plan it.<br><span class="highlight">Do it.</span></h1>{% endblock %}
+{% block hero_extra %}
+<div class="hero__actions">
+    <a class="btn btn--primary btn--lg" href="{% url 'signup' %}">Create a free account</a>
+    <a class="btn btn--lg" href="{% url 'login' %}">Sign in</a>
+</div>
+{% endblock %}
+{% block card %}
+<div class="preview" aria-hidden="true">
+    <div class="preview__card"><span class="check" aria-pressed="false"></span><strong>Renew car insurance</strong><span class="chip chip--in_progress">Doing</span></div>
+    <div class="preview__card"><span class="check" aria-pressed="true"><svg width="20" height="20" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.5" fill="none" stroke="#0A0A0A" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><strong class="is-done">Pay electricity bill</strong><span class="chip chip--done">Done</span></div>
+    <div class="preview__card"><span class="check" aria-pressed="false"></span><strong>Book dentist</strong><span class="chip chip--pending">To do</span></div>
+    <div class="preview__stat"><span class="mono">Done this week</span><b>7</b></div>
+</div>
+{% endblock %}
+{% block after_main %}
+<section class="features" aria-label="Features">
+    <article class="feature">
+        <h2>List</h2>
+        <p>Add a task in one line, filter by status and tick things off as you go.</p>
+    </article>
+    <article class="feature">
+        <h2>Board</h2>
+        <p>Drag cards from To do to Doing to Done, or move them with the keyboard.</p>
+    </article>
+    <article class="feature">
+        <h2>Statistics</h2>
+        <p>See your completion rate, busiest days and which tasks have waited longest.</p>
+    </article>
+</section>
+{% endblock %}

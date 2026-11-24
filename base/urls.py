@@ -5,6 +5,9 @@ from base import views
 app_name = "base"
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    path("api/", include("base.api.urls"), name="base-api"),
+    path("", views.home, name="home"),
+    path("tasks/", views.tasks, name="tasks"),
+    path("board/", views.board, name="board"),
+    path("stats/", views.stats, name="stats"),
+    path("api/", include("base.api.urls")),
 ]
