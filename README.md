@@ -1,8 +1,19 @@
-# ToDo
+# todo.
 
-A small task manager built with Django and Django REST framework. Each user
-signs in and manages their own list of tasks; every task has a title, an
-optional description and a status (Pending, In progress or Done).
+A bold, simple task manager built with Django and Django REST framework, with
+a vibrant neo-brutalist design that works on any screen size from small
+phones to wide desktops.
+
+- **List** – add tasks in one line, filter by status, tick them off, edit
+  inline and delete with undo.
+- **Board** – To do / Doing / Done columns with drag and drop (and keyboard
+  move buttons).
+- **Statistics** – completion rate, weekly completions, an activity heatmap,
+  busiest weekdays, open-task ages and the oldest open tasks.
+
+Anyone can create an account from the sign-up page. Accounts made there are
+regular users; only accounts you create with `createsuperuser` or mark as
+staff in the admin can use the admin site.
 
 ## Requirements
 
@@ -18,12 +29,12 @@ pip install -r requirements-dev.txt
 
 export DJANGO_DEBUG=1                # local development only
 python manage.py migrate
-python manage.py createsuperuser     # creates a user you can sign in with
+python manage.py createsuperuser     # optional: an admin account
 python manage.py runserver
 ```
 
-Open http://127.0.0.1:8000/ and sign in. Add more users from the admin site
-at http://127.0.0.1:8000/admin/.
+Open http://127.0.0.1:8000/ and choose **Sign up** to create an account. The
+admin site is at http://127.0.0.1:8000/admin/.
 
 > **Upgrading an existing checkout:** migrations used to be git-ignored, so an
 > old `db.sqlite3` may not match the committed migration (tasks now belong to
@@ -70,20 +81,54 @@ available at `/api/` once signed in.
 | `PUT` | `/api/tasks/<id>/` | Replace a task's editable fields |
 | `PATCH` | `/api/tasks/<id>/` | Update some fields, e.g. `{"status": "done"}` |
 | `DELETE` | `/api/tasks/<id>/` | Delete a task |
+| `GET` | `/api/stats/?tz=<zone>` | Statistics for your tasks; `tz` is an IANA time zone such as `Europe/London` (default: server time zone) |
 
-`status` is one of `pending`, `in_progress` or `done`. Tasks belonging to
-other users are never listed and return `404`.
+`status` is one of `pending`, `in_progress` or `done`. `completed_at` is set
+automatically when a task becomes done and cleared when it is reopened.
+Tasks belonging to other users are never listed and return `404`.
+
+## Pages and search engines
+
+| Path | Who | Indexed |
+|---|---|---|
+| `/` | Landing page for visitors; signed-in users go to `/tasks/` | Yes |
+| `/accounts/signup/`, `/accounts/login/` | Visitors | Yes |
+| `/tasks/`, `/board/`, `/stats/` | Signed-in users | No (`noindex`) |
+
+Public pages have a title, description, canonical URL and Open Graph tags.
+`/robots.txt` keeps `/api/`, `/admin/` and the app pages out of search
+results and points to `/sitemap.xml`, which lists the public pages.
 
 ## Development
 
 ```bash
-DJANGO_DEBUG=1 python manage.py test     # run the test suite
+DJANGO_DEBUG=1 python manage.py test     # run the Python test suite
 black . && isort .                       # format code
 DJANGO_DEBUG=1 python manage.py makemigrations   # after model changes
 ```
 
-GitHub Actions runs black, isort, the tests, a missing-migrations check and
-`check --deploy` on every push and pull request to `master`.
+### Browser tests
+
+The `e2e/` folder holds Playwright tests that drive the real app in Chromium,
+including checks at screen widths from 320px to 1920px. With the server
+running in another terminal:
+
+```bash
+cd e2e
+npm ci
+npx playwright install chromium
+BASE_URL=http://127.0.0.1:8000 npm test
+```
+
+GitHub Actions runs black, isort, the Python tests, a missing-migrations
+check, `check --deploy` and the browser tests on every push and pull request
+to `master`.
+
+### Front end
+
+Plain HTML templates, one stylesheet (`base/static/base/css/app.css`) and
+small ES modules in `base/static/base/js/` – no build step and no front-end
+framework. Task text is always inserted as text, never as HTML.
 
 ## License
 
