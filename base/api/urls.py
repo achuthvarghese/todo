@@ -1,9 +1,8 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 from base.api import views
 
-urlpatterns = [
-    path("", views.api_root, name="api-root"),
-    path("tasks/", views.task_list, name="task-list"),
-    path("tasks/<uuid:pk>", views.task_detail, name="task-detail"),
-]
+router = DefaultRouter()
+router.register("tasks", views.TaskViewSet, basename="task")
+
+urlpatterns = router.urls
