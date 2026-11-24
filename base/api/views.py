@@ -25,13 +25,13 @@ def task_list(request):
     """
     serializer_context = {"request": request}
     if request.method == "GET":
-        tasks = Task.objects.all()
+        tasks = Task.objects.filter(owner=request.user)
         serializer = TaskSerializer(tasks, many=True, context=serializer_context)
         return Response(serializer.data)
 
     serializer = TaskSerializer(data=request.data, context=serializer_context)
     if serializer.is_valid():
-        serializer.save()
+        serializer.save(owner=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -42,7 +42,7 @@ def task_detail(request, pk):
     Retrieve, update or delete a Task.
     """
     serializer_context = {"request": request}
-    task = get_object_or_404(Task, pk=pk)
+    task = get_object_or_404(Task, pk=pk, owner=request.user)
 
     if request.method == "GET":
         serializer = TaskSerializer(task, context=serializer_context)

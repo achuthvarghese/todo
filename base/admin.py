@@ -6,8 +6,10 @@ from base.models import Task
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ("title", "status", "created_at", "updated_at")
+    list_display = ("title", "owner", "status", "created_at", "updated_at")
     list_filter = ("status",)
+    search_fields = ("title", "owner__username")
+    list_select_related = ("owner",)
     actions = ("mark_done",)
 
     @admin.action(description="Mark selected tasks as Done")
