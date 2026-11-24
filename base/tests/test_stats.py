@@ -133,7 +133,7 @@ class ComputeStatsTests(TestCase):
 class StatsApiTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user("alice")
-        self.url = reverse("base:stats")
+        self.url = reverse("base:api-stats")
 
     def test_requires_login(self):
         self.assertEqual(

@@ -1,0 +1,48 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block extra_head %}<meta name="csrf-token" content="{{ csrf_token }}">{% endblock %}
+{% block body %}
+<header class="site-header">
+    <div class="site-header__inner">
+        {% include "base/_brand.html" %}
+        <nav class="main-nav" aria-label="Main">
+            <a class="toggle" href="{% url 'base:tasks' %}"{% if section == "tasks" %} aria-current="page"{% endif %}>List</a>
+            <a class="toggle" href="{% url 'base:board' %}"{% if section == "board" %} aria-current="page"{% endif %}>Board</a>
+            <a class="toggle" href="{% url 'base:stats' %}"{% if section == "stats" %} aria-current="page"{% endif %}>Stats</a>
+        </nav>
+        <details class="account">
+            <summary aria-label="Account menu for {{ user.get_username }}">
+                <span class="account__name">{{ user.get_username }}</span>
+                <span class="avatar" aria-hidden="true">{{ user.get_username|first }}</span>
+            </summary>
+            <div class="account__menu">
+                <p>Signed in as <strong>{{ user.get_username }}</strong></p>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn--block">Sign out</button>
+                </form>
+            </div>
+        </details>
+    </div>
+</header>
+
+<main id="main" class="page{% block page_class %}{% endblock %}"
+      data-api-tasks="{% url 'base:task-list' %}" data-api-stats="{% url 'base:api-stats' %}">
+    {% block content %}{% endblock %}
+    <noscript><p class="empty"><strong>JavaScript is needed</strong>Turn on JavaScript to manage your tasks.</p></noscript>
+</main>
+
+<nav class="bottom-nav" aria-label="Main">
+    <a href="{% url 'base:tasks' %}"{% if section == "tasks" %} aria-current="page"{% endif %}>
+        <svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M3 8h10M3 12h10" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round"/></svg>List</a>
+    <a href="{% url 'base:board' %}"{% if section == "board" %} aria-current="page"{% endif %}>
+        <svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="3.2" height="10" rx="1" fill="none" stroke="#0A0A0A" stroke-width="1.8"/><rect x="6.4" y="3" width="3.2" height="7" rx="1" fill="none" stroke="#0A0A0A" stroke-width="1.8"/><rect x="10.8" y="3" width="3.2" height="5" rx="1" fill="none" stroke="#0A0A0A" stroke-width="1.8"/></svg>Board</a>
+    <a href="{% url 'base:stats' %}"{% if section == "stats" %} aria-current="page"{% endif %}>
+        <svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13V8M8 13V3M13 13V6" stroke="#0A0A0A" stroke-width="2.2" stroke-linecap="round"/></svg>Stats</a>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+    <span class="toast__text"></span>
+    <button type="button" class="btn" hidden></button>
+</div>
+{% endblock %}

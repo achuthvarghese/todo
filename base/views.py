@@ -11,7 +11,7 @@ from base.forms import SignUpForm
 @require_GET
 def home(request):
     if request.user.is_authenticated:
-        return _legacy_index(request)
+        return redirect("base:tasks")
     context = {
         "page_title": "todo. — a bold, simple task manager",
         "page_description": (
@@ -22,15 +22,29 @@ def home(request):
     return render(request, "base/landing.html", context)
 
 
-@login_required
-def _legacy_index(request):
-    return render(request, "base/index.html", {"title": "Home", "noindex": True})
+def _app_page(template, section, title):
+    @login_required
+    @require_GET
+    def view(request):
+        context = {
+            "section": section,
+            "page_title": f"{title} — todo.",
+            "noindex": True,
+        }
+        return render(request, template, context)
+
+    return view
+
+
+tasks = _app_page("base/tasks.html", "tasks", "Tasks")
+board = _app_page("base/board.html", "board", "Board")
+stats = _app_page("base/stats.html", "stats", "Statistics")
 
 
 class SignUpView(CreateView):
     form_class = SignUpForm
     template_name = "registration/signup.html"
-    success_url = reverse_lazy("base:home")
+    success_url = reverse_lazy("base:tasks")
     extra_context = {
         "page_title": "Create an account — todo.",
         "page_description": (

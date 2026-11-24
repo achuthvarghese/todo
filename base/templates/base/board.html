@@ -1,0 +1,30 @@
+{% extends "base/app.html" %}
+{% load static %}
+{% block content %}
+<div class="page-head">
+    <h1 class="page-title">Board</h1>
+    <p class="page-sub">Drag cards between columns, or use the arrow buttons.</p>
+</div>
+<p class="loading" id="loading">Loading board…</p>
+<div class="board" id="board">
+    <section class="column column--pending" data-status="pending" aria-labelledby="col-pending">
+        <div class="column__head"><h2 id="col-pending"><span class="swatch swatch--pending" aria-hidden="true"></span>To do</h2><span class="count" data-count="pending">0</span></div>
+        <ul class="column__cards" aria-labelledby="col-pending"></ul>
+        <p class="column__empty" hidden>Nothing here. Drop a card or add one.</p>
+        <button type="button" class="btn btn--ghost" data-add="pending">+ Add to To do</button>
+    </section>
+    <section class="column column--in_progress" data-status="in_progress" aria-labelledby="col-in_progress">
+        <div class="column__head"><h2 id="col-in_progress"><span class="swatch swatch--in_progress" aria-hidden="true"></span>Doing</h2><span class="count" data-count="in_progress">0</span></div>
+        <ul class="column__cards" aria-labelledby="col-in_progress"></ul>
+        <p class="column__empty" hidden>Nothing in progress.</p>
+        <button type="button" class="btn btn--ghost" data-add="in_progress">+ Add to Doing</button>
+    </section>
+    <section class="column column--done" data-status="done" aria-labelledby="col-done">
+        <div class="column__head"><h2 id="col-done"><span class="swatch swatch--done" aria-hidden="true"></span>Done</h2><span class="count" data-count="done">0</span></div>
+        <ul class="column__cards" aria-labelledby="col-done"></ul>
+        <p class="column__empty" hidden>Nothing done yet.</p>
+        <button type="button" class="btn btn--ghost" data-add="done">+ Add to Done</button>
+    </section>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{% static 'base/js/board.js' %}"></script>{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base/app.html" %}
+{% load static %}
+{% block content %}
+<div class="page-head">
+    <h1 class="page-title">Statistics</h1>
+    <p class="mono" id="stats-meta">Loading…</p>
+</div>
+
+<div class="bento" id="bento" aria-busy="true">
+    <section class="panel kpi"><h2>Completion rate</h2><p class="kpi__value"><span data-kpi="completion_rate">–</span><span class="kpi__unit">%</span></p><p class="kpi__note" data-kpi-note="completion_rate"></p></section>
+    <section class="panel kpi"><h2>Open tasks</h2><p class="kpi__value" data-kpi="open">–</p><p class="kpi__note" data-kpi-note="open"></p></section>
+    <section class="panel kpi"><h2>Done this week</h2><p class="kpi__value" data-kpi="done_this_week">–</p><p class="kpi__note" data-kpi-note="done_this_week"></p></section>
+    <section class="panel kpi"><h2>Avg. time to done</h2><p class="kpi__value"><span data-kpi="avg_days_to_done">–</span><span class="kpi__unit" data-kpi-unit="avg_days_to_done"></span></p><p class="kpi__note">From created to done</p></section>
+
+    <section class="panel span-8" aria-labelledby="weekly-h">
+        <div class="panel__head">
+            <div><h2 id="weekly-h">Tasks completed per week</h2><p class="panel__sub">Last 8 weeks</p></div>
+            <button type="button" class="toggle" id="weekly-table-toggle" aria-pressed="false" aria-controls="weekly-chart weekly-table">Show table</button>
+        </div>
+        <p class="tip" id="weekly-tip" aria-live="polite">Hover or focus a bar for details</p>
+        <div class="vchart" id="weekly-chart"></div>
+        <table class="data-table" id="weekly-table" hidden>
+            <caption class="visually-hidden">Tasks completed per week</caption>
+            <thead><tr><th scope="col">Week starting</th><th scope="col">Completed</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section class="panel span-4" aria-labelledby="status-h">
+        <div><h2 id="status-h">By status</h2><p class="panel__sub" id="status-total"></p></div>
+        <div class="stack" id="status-stack" role="img"></div>
+        <ul class="legend" id="status-legend"></ul>
+        <p class="note" id="status-note"></p>
+    </section>
+
+    <section class="panel span-7" aria-labelledby="heat-h">
+        <div><h2 id="heat-h">Activity</h2><p class="panel__sub">Tasks completed per day, last 12 weeks</p></div>
+        <p class="tip" id="heat-tip" aria-live="polite">Hover or focus a day for details</p>
+        <div class="heatmap">
+            <div class="heatmap__days" aria-hidden="true"><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span>Sun</span></div>
+            <div class="heatmap__grid" id="heatmap" role="img"></div>
+        </div>
+        <div class="scale" aria-hidden="true"><span>Less</span><span class="heatmap__cell"></span><span class="heatmap__cell" data-level="1"></span><span class="heatmap__cell" data-level="2"></span><span class="heatmap__cell" data-level="3"></span><span class="heatmap__cell" data-level="4"></span><span>More</span></div>
+    </section>
+
+    <section class="panel span-5" aria-labelledby="dow-h">
+        <div><h2 id="dow-h">Busiest days</h2><p class="panel__sub">Tasks completed by weekday, all time</p></div>
+        <ul class="hbars" id="weekdays"></ul>
+    </section>
+
+    <section class="panel panel--blue span-half" aria-labelledby="age-h">
+        <div><h2 id="age-h">How old are open tasks?</h2><p class="panel__sub" id="age-sub"></p></div>
+        <div class="vchart vchart--short vchart--blue" id="ages-chart"></div>
+    </section>
+
+    <section class="panel span-half" aria-labelledby="oldest-h">
+        <div class="panel__head"><h2 id="oldest-h">Oldest open tasks</h2><a href="{% url 'base:tasks' %}"><strong>See all</strong></a></div>
+        <ol class="oldest" id="oldest"></ol>
+        <p class="panel__sub" id="oldest-empty" hidden>No open tasks. Nice.</p>
+    </section>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{% static 'base/js/stats.js' %}"></script>{% endblock %}

@@ -23,13 +23,49 @@ class LandingTests(TestCase):
         self.assertEqual(len(re.findall(r"<h1[ >]", html)), 1)
         self.assertContains(response, reverse("signup"))
 
-    def test_signed_in_home_is_not_indexed(self):
+    def test_signed_in_home_goes_to_tasks(self):
         self.client.force_login(User.objects.create_user("alice"))
-        response = self.client.get(reverse("base:home"))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response, '<meta name="robots" content="noindex, nofollow">'
+        self.assertRedirects(
+            self.client.get(reverse("base:home")), reverse("base:tasks")
         )
+
+
+class AppPageTests(TestCase):
+    pages = [
+        ("base:tasks", "Tasks"),
+        ("base:board", "Board"),
+        ("base:stats", "Statistics"),
+    ]
+
+    def test_require_login(self):
+        for name, _ in self.pages:
+            with self.subTest(name=name):
+                url = reverse(name)
+                self.assertRedirects(
+                    self.client.get(url), f"{reverse('login')}?next={url}"
+                )
+
+    def test_render_for_signed_in_user(self):
+        self.client.force_login(User.objects.create_user("alice"))
+        for name, title in self.pages:
+            with self.subTest(name=name):
+                response = self.client.get(reverse(name))
+                self.assertEqual(response.status_code, 200)
+                html = response.content.decode()
+                self.assertIn(f"<title>{title} — todo.</title>", html)
+                self.assertIn('<meta name="robots" content="noindex, nofollow">', html)
+                self.assertNotIn('rel="canonical"', html)
+                self.assertIn('name="csrf-token"', html)
+                self.assertIn(f'data-api-tasks="{reverse("base:task-list")}"', html)
+                self.assertIn('aria-current="page"', html)
+                self.assertIn("Signed in as <strong>alice</strong>", html)
+                self.assertEqual(len(re.findall(r"<h1[ >]", html)), 1)
+
+    def test_username_is_escaped(self):
+        self.client.force_login(User.objects.create_user("<b>x</b>"))
+        response = self.client.get(reverse("base:tasks"))
+        self.assertNotContains(response, "<b>x</b>")
+        self.assertContains(response, "&lt;b&gt;x&lt;/b&gt;")
 
 
 class LoginTests(TestCase):
@@ -44,7 +80,7 @@ class LoginTests(TestCase):
         response = self.client.post(
             reverse("login"), {"username": "alice", "password": "a-Strong-pass-123"}
         )
-        self.assertRedirects(response, reverse("base:home"))
+        self.assertRedirects(response, reverse("base:tasks"))
         response = self.client.post(reverse("logout"))
         self.assertRedirects(response, reverse("login"))
 
@@ -57,7 +93,7 @@ class LoginTests(TestCase):
 
     def test_signed_in_user_is_redirected_away(self):
         self.client.force_login(User.objects.create_user("alice"))
-        self.assertRedirects(self.client.get(reverse("login")), reverse("base:home"))
+        self.assertRedirects(self.client.get(reverse("login")), reverse("base:tasks"))
 
 
 class SignUpTests(TestCase):
@@ -80,7 +116,7 @@ class SignUpTests(TestCase):
                 "is_superuser": "on",
             },
         )
-        self.assertRedirects(response, reverse("base:home"))
+        self.assertRedirects(response, reverse("base:tasks"))
         user = User.objects.get(username="newbie")
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
@@ -111,7 +147,7 @@ class SignUpTests(TestCase):
 
     def test_signed_in_user_is_redirected_away(self):
         self.client.force_login(User.objects.create_user("alice"))
-        self.assertRedirects(self.client.get(self.url), reverse("base:home"))
+        self.assertRedirects(self.client.get(self.url), reverse("base:tasks"))
 
 
 class SeoFilesTests(TestCase):
