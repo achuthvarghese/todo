@@ -93,6 +93,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "base.context_processors.seo",
+                "base.context_processors.demo_login",
             ],
         },
     },
