@@ -14,24 +14,20 @@ class TaskAdmin(admin.ModelAdmin):
     def mark_done(self, request, queryset):
         try:
             updated = queryset.update(status=Task.STATUS.DONE)
-            self.message_user(
-                request,
-                ngettext(
-                    "%d story was successfully marked as done.",
-                    "%d stories were successfully marked as done.",
-                    updated,
-                )
-                % updated,
-                messages.SUCCESS,
-            )
         except Exception:
             self.message_user(
                 request,
-                ngettext(
-                    "%d story was not successfully marked as done.",
-                    "%d stories were not successfully marked as done.",
-                    updated,
-                )
-                % updated,
+                "The selected tasks could not be marked as done.",
                 messages.ERROR,
             )
+            return
+        self.message_user(
+            request,
+            ngettext(
+                "%d task was successfully marked as done.",
+                "%d tasks were successfully marked as done.",
+                updated,
+            )
+            % updated,
+            messages.SUCCESS,
+        )
