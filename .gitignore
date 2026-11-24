@@ -5,3 +5,5 @@ staticfiles/
 .env
 .venv/
 node_modules/
+_site/
+serve/

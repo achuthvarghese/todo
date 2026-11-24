@@ -1,14 +1,20 @@
 {% extends "base/_auth_layout.html" %}
 {% block extra_head %}
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"todo.","applicationCategory":"ProductivityApplication","operatingSystem":"Any","description":"A bold, simple task manager with a list, a board and statistics.","url":"{{ request.scheme }}://{{ request.get_host }}/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"todo.","applicationCategory":"ProductivityApplication","operatingSystem":"Any","description":"A bold, simple task manager with a list, a board and statistics.","url":"{{ site_root_url }}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 {% endblock %}
-{% block top_links %}<a class="btn" href="{% url 'login' %}">Sign in</a><a class="btn btn--primary" href="{% url 'signup' %}">Sign up</a>{% endblock %}
+{% block top_links %}{% if static_demo %}<a class="btn btn--primary" href="{% url 'base:tasks' %}">Open the demo</a>{% else %}<a class="btn" href="{% url 'login' %}">Sign in</a><a class="btn btn--primary" href="{% url 'signup' %}">Sign up</a>{% endif %}{% endblock %}
 {% block hero_heading %}<h1 class="hero__title" id="hero-title">Plan it.<br><span class="highlight">Do it.</span></h1>{% endblock %}
 {% block hero_extra %}
 <div class="hero__actions">
+    {% if static_demo %}
+    <a class="btn btn--primary btn--lg" href="{% url 'base:tasks' %}">Open the demo</a>
+    <a class="btn btn--lg" href="{% url 'base:stats' %}">See the stats</a>
+    {% else %}
     <a class="btn btn--primary btn--lg" href="{% url 'signup' %}">Create a free account</a>
     <a class="btn btn--lg" href="{% url 'login' %}">Sign in</a>
+    {% endif %}
 </div>
+{% if static_demo %}<p class="page-sub">This demo runs entirely in your browser: no account needed, and your tasks stay on this device.</p>{% endif %}
 {% endblock %}
 {% block card %}
 <div class="preview" aria-hidden="true">

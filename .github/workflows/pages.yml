@@ -1,0 +1,151 @@
+# Build a static, browser-only demo of the app and publish it to GitHub Pages.
+#
+# GitHub Pages can only serve static files, so it can't run Django. This
+# workflow renders the real templates, CSS and JavaScript into plain HTML
+# (python manage.py build_static_site); on the published site tasks are kept in
+# the visitor's browser and seeded with sample data.
+#
+# Every pull request builds and tests the site. Pushes to master also publish
+# it to the gh-pages branch. One-time setup: Settings > Pages > Build and
+# deployment > Source: "Deploy from a branch", Branch: gh-pages / (root).
+#
+# Optional repository variables (Settings > Secrets and variables > Actions >
+# Variables) for a custom domain: PAGES_BASE_PATH (e.g. "/") and PAGES_ORIGIN
+# (e.g. "https://todo.example.com").
+
+name: GitHub Pages
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build static site
+    runs-on: ubuntu-latest
+    outputs:
+      base-path: ${{ steps.paths.outputs.base-path }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          npm ci --prefix e2e
+          npx --prefix e2e playwright install --with-deps chromium
+
+      - name: Work out the site address
+        id: paths
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          BASE_OVERRIDE: ${{ vars.PAGES_BASE_PATH }}
+          ORIGIN_OVERRIDE: ${{ vars.PAGES_ORIGIN }}
+        run: |
+          owner="$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')"
+          if [ -n "$BASE_OVERRIDE" ]; then
+            base="$BASE_OVERRIDE"
+          elif [ "$REPO" = "${owner}.github.io" ]; then
+            base="/"
+          else
+            base="/${REPO}/"
+          fi
+          origin="${ORIGIN_OVERRIDE:-https://${owner}.github.io}"
+          echo "base-path=$base" >> "$GITHUB_OUTPUT"
+          echo "origin=$origin" >> "$GITHUB_OUTPUT"
+          echo "Site: ${origin}${base}"
+
+      - name: Run the Python tests
+        env:
+          DJANGO_DEBUG: "1"
+        run: python manage.py test base.tests.test_static_site
+
+      - name: Build the site
+        env:
+          DJANGO_DEBUG: "1"
+        run: >
+          python manage.py build_static_site
+          --output _site
+          --base-path "${{ steps.paths.outputs.base-path }}"
+          --site-origin "${{ steps.paths.outputs.origin }}"
+
+      - name: Test the built site in a browser
+        env:
+          BASE_PATH: ${{ steps.paths.outputs.base-path }}
+        run: |
+          # Serve _site at the same path GitHub Pages will use.
+          mkdir -p serve
+          if [ "$BASE_PATH" = "/" ]; then
+            root="$PWD/_site"
+          else
+            mkdir -p "serve$(dirname "${BASE_PATH%/}")"
+            ln -s "$PWD/_site" "serve${BASE_PATH%/}"
+            root="$PWD/serve"
+          fi
+          python -m http.server 8080 --directory "$root" > http.log 2>&1 &
+          sleep 1
+          STATIC_BASE_URL="http://127.0.0.1:8080${BASE_PATH}" npm test --prefix e2e
+
+      - name: Keep the built site
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-site
+          path: _site
+          include-hidden-files: true
+          retention-days: 7
+
+  deploy:
+    name: Publish to gh-pages
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
+    steps:
+      - name: Download the built site
+        uses: actions/download-artifact@v4
+        with:
+          name: static-site
+          path: _site
+
+      - name: Push to the gh-pages branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: _site
+        run: |
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA::7} from ${GITHUB_REF_NAME}"
+          # The branch only ever holds the latest build, so it is replaced each time.
+          git push -q --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+          echo "Published to the gh-pages branch." >> "$GITHUB_STEP_SUMMARY"

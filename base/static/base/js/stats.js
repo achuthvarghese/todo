@@ -1,4 +1,4 @@
-import { API, STATUS, STATUS_ORDER, api, h, showError } from "./common.js";
+import { STATUS, STATUS_ORDER, h, showError, statsApi } from "./common.js";
 
 const bento = document.getElementById("bento");
 const meta = document.getElementById("stats-meta");
@@ -216,18 +216,8 @@ tableToggle.addEventListener("click", () => {
 });
 
 async function load() {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const url = new URL(API.stats, location.origin);
-    if (tz) url.searchParams.set("tz", tz);
     try {
-        let stats;
-        try {
-            stats = await api(url);
-        } catch (err) {
-            // Fall back to the server's time zone if the browser's is unknown.
-            if (err.status !== 400) throw err;
-            stats = await api(API.stats);
-        }
+        const stats = await statsApi.get();
         renderKpis(stats);
         renderWeekly(stats);
         renderStatus(stats);

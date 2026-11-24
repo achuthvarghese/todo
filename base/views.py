@@ -7,38 +7,46 @@ from django.views.generic import CreateView
 
 from base.forms import SignUpForm
 
+LANDING_CONTEXT = {
+    "page_title": "todo. — a bold, simple task manager",
+    "page_description": (
+        "Plan it. Do it. A bold, simple task manager with a list, a "
+        "drag-and-drop board and statistics. Free to use."
+    ),
+}
+
+# section -> (template, title). Also used by the static site build.
+APP_PAGES = {
+    "tasks": ("base/tasks.html", "Tasks"),
+    "board": ("base/board.html", "Board"),
+    "stats": ("base/stats.html", "Statistics"),
+}
+
+
+def app_page_context(section):
+    _, title = APP_PAGES[section]
+    return {"section": section, "page_title": f"{title} — todo.", "noindex": True}
+
 
 @require_GET
 def home(request):
     if request.user.is_authenticated:
         return redirect("base:tasks")
-    context = {
-        "page_title": "todo. — a bold, simple task manager",
-        "page_description": (
-            "Plan it. Do it. A bold, simple task manager with a list, a "
-            "drag-and-drop board and statistics. Free to use."
-        ),
-    }
-    return render(request, "base/landing.html", context)
+    return render(request, "base/landing.html", LANDING_CONTEXT)
 
 
-def _app_page(template, section, title):
+def _app_page(section):
     @login_required
     @require_GET
     def view(request):
-        context = {
-            "section": section,
-            "page_title": f"{title} — todo.",
-            "noindex": True,
-        }
-        return render(request, template, context)
+        return render(request, APP_PAGES[section][0], app_page_context(section))
 
     return view
 
 
-tasks = _app_page("base/tasks.html", "tasks", "Tasks")
-board = _app_page("base/board.html", "board", "Board")
-stats = _app_page("base/stats.html", "stats", "Statistics")
+tasks = _app_page("tasks")
+board = _app_page("board")
+stats = _app_page("stats")
 
 
 class SignUpView(CreateView):

@@ -54,12 +54,40 @@ export async function api(url, { method = "GET", body, keepalive = false } = {})
     return data;
 }
 
-export const tasksApi = {
+/** True on the static demo (GitHub Pages), where data lives in this browser. */
+export const STATIC_DEMO = main.dataset.mode === "static";
+
+const serverTasks = {
     list: () => api(API.tasks),
     create: (fields) => api(API.tasks, { method: "POST", body: fields }),
     update: (task, fields) => api(task.url, { method: "PATCH", body: fields }),
     remove: (task, opts = {}) => api(task.url, { method: "DELETE", ...opts }),
 };
+
+async function serverStats() {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const url = new URL(API.stats, location.origin);
+    if (tz) url.searchParams.set("tz", tz);
+    try {
+        return await api(url);
+    } catch (err) {
+        // Fall back to the server's time zone if the browser's is unknown.
+        if (err.status !== 400) throw err;
+        return api(API.stats);
+    }
+}
+
+const local = STATIC_DEMO ? await import("./local.js") : null;
+
+export const tasksApi = local ? local.localTasks : serverTasks;
+export const statsApi = { get: local ? local.localStats.get : serverStats };
+
+if (local) {
+    document.getElementById("reset-demo")?.addEventListener("click", () => {
+        local.resetDemo();
+        location.reload();
+    });
+}
 
 /** Build an element. Strings become text nodes, never HTML. */
 export function h(tag, attrs = {}, ...children) {
