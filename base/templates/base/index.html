@@ -18,7 +18,13 @@
 
 <body>
     <div id="main">
-        <div id="nav"></div>
+        <div id="nav">
+            <span>Signed in as {{ user.get_username }}</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link">Sign out</button>
+            </form>
+        </div>
         <div id="content">
             <h1>To Do</h1>
             <p>Manage your tasks</p>

@@ -1,13 +1,8 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from base.models import Task
 
-
+@login_required
 def index(request):
-    tasks = Task.objects.all()
-    context = {
-        "title": "Home",
-        "tasks": tasks,
-    }
-    template = "base/index.html"
-    return render(request, template, context)
+    context = {"title": "Home"}
+    return render(request, "base/index.html", context)
