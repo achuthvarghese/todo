@@ -1,0 +1,12 @@
+{
+  "name": "todo-e2e",
+  "private": true,
+  "description": "Browser tests for todo. Run against a running server: BASE_URL=http://127.0.0.1:8000 npm test",
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-concurrency=1"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
